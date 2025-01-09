@@ -1,7 +1,7 @@
 <script>
-  import { getContext , onDestroy} from "svelte";
-  import CellString from "../../bb_super_components_shared/src/lib/SuperTableCells/CellString.svelte";
-  
+  import { getContext, onDestroy } from "svelte";
+  import CellColor from "../../bb_super_components_shared/src/lib/SuperTableCells/CellColor.svelte";
+
   const { styleable, Block, BlockComponent, Provider } = getContext("sdk");
   const component = getContext("component");
 
@@ -12,37 +12,36 @@
   const formApi = formContext?.formApi;
 
   export let field;
-  
-  export let customButtons
+
+  export let customButtons;
 
   export let buttons = [];
   export let buttonsQuiet;
 
   export let label;
   export let span = 6;
-  export let placeholder
-  export let defaultValue
-  export let template
-  export let disabled
-  export let readonly
-  export let validation
+  export let placeholder;
+  export let defaultValue;
+  export let template;
+  export let disabled;
+  export let readonly;
+  export let validation;
 
-  export let onChange
-  export let debounced
-  export let debounceDelay
+  export let onChange;
+  export let debounced;
+  export let debounceDelay;
 
-  export let icon
-  export let suggestions
-  export let clearValueIcon
+  export let icon;
+  export let suggestions;
+  export let clearValueIcon;
 
   let formField;
   let formStep;
   let fieldState;
   let fieldApi;
-  let fieldSchema
+  let fieldSchema;
   let value;
-  let cellState
-  
+  let cellState;
 
   $: formStep = formStepContext ? $formStepContext || 1 : 1;
 
@@ -54,7 +53,7 @@
     readonly,
     validation,
     formStep
-  )
+  );
 
   $: unsubscribe = formField?.subscribe((value) => {
     fieldState = value?.fieldState;
@@ -62,21 +61,21 @@
     fieldSchema = value?.fieldSchema;
   });
 
-  $: value = fieldState?.value ? fieldState.value : defaultValue
-  $: cellOptions = { 
-      placeholder, 
-      defaultValue,
-      disabled,
-      template,
-      suggestions,
-      padding: "0.5rem",
-      readonly: readonly || disabled,
-      icon,
-      debounce: debounced ? debounceDelay : false,
-      clearValueIcon,
-      error: fieldState.error,
-      role: "formInput", 
-    }
+  $: value = fieldState?.value ? fieldState.value : defaultValue;
+  $: cellOptions = {
+    placeholder,
+    defaultValue,
+    disabled,
+    template,
+    suggestions,
+    padding: "0.5rem",
+    readonly: readonly || disabled,
+    icon,
+    debounce: debounced ? debounceDelay : false,
+    clearValueIcon,
+    error: fieldState.error,
+    role: "formInput",
+  };
 
   $: $component.styles = {
     ...$component.styles,
@@ -89,17 +88,16 @@
         labelPos == "left" ? (labelWidth ? labelWidth : "6rem") : "auto",
     },
   };
-  
-  const handleChange = ( newValue ) => {
-    onChange?.({value: newValue});
+
+  const handleChange = (newValue) => {
+    onChange?.({ value: newValue });
     fieldApi?.setValue(newValue);
-  }
+  };
 
   onDestroy(() => {
-    fieldApi?.deregister()
-    unsubscribe?.()
-  })
-
+    fieldApi?.deregister();
+    unsubscribe?.();
+  });
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
@@ -107,17 +105,17 @@
 <Block>
   <div
     class="superField"
-    on:focus={cellState.focus} 
+    on:focus={cellState?.focus}
     tabindex="0"
-    use:styleable={$component.styles}  
+    use:styleable={$component.styles}
   >
     {#if label}
-      <label for="superCell"
+      <label
+        for="superCell"
         class="superlabel"
         style:flex-direction={labelPos == "left" ? "column" : "row"}
-
       >
-        {label} 
+        {label}
         {#if fieldState.error}
           <div class="error">
             <span>{fieldState.error}</span>
@@ -127,7 +125,7 @@
     {/if}
 
     <div class="inline-cells">
-      <CellString
+      <CellColor
         bind:cellState
         {cellOptions}
         {value}
@@ -140,24 +138,21 @@
           class="spectrum-ActionGroup spectrum-ActionGroup--compact spectrum-ActionGroup--sizeM"
           class:spectrum-ActionGroup--quiet={buttonsQuiet}
         >
-          <Provider data={ {value}} >
+          <Provider data={{ value }}>
             {#each buttons as { text, onClick }}
               <BlockComponent
-                type = "plugin/bb-component-SuperButton"
-                props = {{
+                type="plugin/bb-component-SuperButton"
+                props={{
                   size: "M",
                   text,
-                  onClick
-                }}>
-                </BlockComponent>
-              {/each}
+                  onClick,
+                }}
+              ></BlockComponent>
+            {/each}
           </Provider>
         </div>
       {/if}
     </div>
-
-
-    
   </div>
 </Block>
 
@@ -200,7 +195,3 @@
     color: var(--spectrum-global-color-red-700);
   }
 </style>
-
-
-
-
