@@ -1,23 +1,22 @@
 <script>
   import { getContext, onDestroy } from "svelte";
   import CellColor from "../../bb_super_components_shared/src/lib/SuperTableCells/CellColor.svelte";
+  import SuperFieldLabel from "../../bb_super_components_shared/src/lib/SuperFieldLabel/SuperFieldLabel.svelte";
+  import "../../bb_super_components_shared/src/lib/SuperFieldsCommon.css";
+  import "../../bb_super_components_shared/src/lib/SuperTableCells/CellCommon.css";
 
-  const { styleable, Block, BlockComponent, Provider } = getContext("sdk");
+  const { styleable, memo } = getContext("sdk");
   const component = getContext("component");
 
   const formContext = getContext("form");
   const formStepContext = getContext("form-step");
-  const labelPos = getContext("field-group");
+  const groupLabelPosition = getContext("field-group");
   const labelWidth = getContext("field-group-label-width");
+  const groupColumns = getContext("field-group-columns");
+  const groupDisabled = getContext("field-group-disabled");
   const formApi = formContext?.formApi;
 
   export let field;
-
-  export let customButtons;
-
-  export let buttons = [];
-  export let buttonsQuiet;
-
   export let label;
   export let span = 6;
   export let placeholder;
@@ -26,14 +25,16 @@
   export let disabled;
   export let readonly;
   export let validation;
+  export let labelPosition = "fieldGroup";
+  export let swatch = "square";
 
   export let onChange;
   export let debounced;
   export let debounceDelay;
 
-  export let icon;
-  export let suggestions;
-  export let clearValueIcon;
+  export let allowCustom, customColors;
+  export let themeColors, staticColors;
+  export let helpText;
 
   let formField;
   let formStep;
@@ -44,6 +45,10 @@
   let cellState;
 
   $: formStep = formStepContext ? $formStepContext || 1 : 1;
+  $: labelPos =
+    groupLabelPosition && labelPosition == "fieldGroup"
+      ? groupLabelPosition
+      : labelPosition;
 
   $: formField = formApi?.registerField(
     field,
@@ -67,14 +72,16 @@
     defaultValue,
     disabled,
     template,
-    suggestions,
     padding: "0.5rem",
     readonly: readonly || disabled,
-    icon,
     debounce: debounced ? debounceDelay : false,
-    clearValueIcon,
-    error: fieldState.error,
+    error: fieldState?.error,
     role: "formInput",
+    themeColors,
+    staticColors,
+    customColors,
+    allowCustom,
+    swatch,
   };
 
   $: $component.styles = {
@@ -82,8 +89,9 @@
     normal: {
       ...$component.styles.normal,
       "flex-direction": labelPos == "left" ? "row" : "column",
+      "align-items": "stretch",
       gap: labelPos == "left" ? "0.5rem" : "0rem",
-      "grid-column": labelPos ? "span " + span : "span 1",
+      "grid-column": span < 7 ? "span " + span : "span " + groupColumns * 6,
       "--label-width":
         labelPos == "left" ? (labelWidth ? labelWidth : "6rem") : "auto",
     },
@@ -102,27 +110,16 @@
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
-<Block>
-  <div
-    class="superField"
-    on:focus={cellState?.focus}
-    tabindex="0"
-    use:styleable={$component.styles}
-  >
-    {#if label}
-      <label
-        for="superCell"
-        class="superlabel"
-        style:flex-direction={labelPos == "left" ? "column" : "row"}
-      >
-        {label}
-        {#if fieldState.error}
-          <div class="error">
-            <span>{fieldState.error}</span>
-          </div>
-        {/if}
-      </label>
-    {/if}
+
+<div use:styleable={$component.styles}>
+  <div class="superField" class:left-label={labelPos == "left"}>
+    <SuperFieldLabel
+      {labelPos}
+      {labelWidth}
+      {label}
+      {helpText}
+      error={fieldState?.error}
+    />
 
     <div class="inline-cells">
       <CellColor
@@ -133,65 +130,6 @@
         on:change={(e) => handleChange(e.detail)}
         on:blur={cellState.lostFocus}
       />
-      {#if customButtons && buttons?.length}
-        <div
-          class="spectrum-ActionGroup spectrum-ActionGroup--compact spectrum-ActionGroup--sizeM"
-          class:spectrum-ActionGroup--quiet={buttonsQuiet}
-        >
-          <Provider data={{ value }}>
-            {#each buttons as { text, onClick }}
-              <BlockComponent
-                type="plugin/bb-component-SuperButton"
-                props={{
-                  size: "M",
-                  text,
-                  onClick,
-                }}
-              ></BlockComponent>
-            {/each}
-          </Provider>
-        </div>
-      {/if}
     </div>
   </div>
-</Block>
-
-<style>
-  .superField {
-    flex: auto;
-    width: 100%;
-    display: flex;
-    align-items: stretch;
-    min-width: 0;
-  }
-
-  .superField:focus {
-    outline: none;
-  }
-  .superlabel {
-    display: flex;
-    justify-content: space-between;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    min-width: var(--label-width);
-    max-width: var(--label-width);
-    font-size: 13px;
-    line-height: 1.75rem;
-    font-weight: 400;
-    color: var(--spectrum-global-color-gray-700);
-  }
-
-  .inline-cells {
-    flex: 1;
-    display: flex;
-    justify-content: stretch;
-    height: 2rem;
-  }
-
-  .error {
-    font-size: 12px;
-    line-height: 1.75rem;
-    color: var(--spectrum-global-color-red-700);
-  }
-</style>
+</div>
