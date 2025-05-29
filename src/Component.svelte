@@ -1,9 +1,7 @@
 <script>
   import { getContext, onDestroy } from "svelte";
-  import CellColor from "../../bb_super_components_shared/src/lib/SuperTableCells/CellColor.svelte";
-  import SuperFieldLabel from "../../bb_super_components_shared/src/lib/SuperFieldLabel/SuperFieldLabel.svelte";
-  import "../../bb_super_components_shared/src/lib/SuperFieldsCommon.css";
-  import "../../bb_super_components_shared/src/lib/SuperTableCells/CellCommon.css";
+
+  import { SuperField, CellColor } from "@poirazis/supercomponents-shared";
 
   const { styleable, memo } = getContext("sdk");
   const component = getContext("component");
@@ -16,7 +14,7 @@
   const groupDisabled = getContext("field-group-disabled");
   const formApi = formContext?.formApi;
 
-  export let field;
+  export let field = "Color Field";
   export let label;
   export let span = 6;
   export let placeholder;
@@ -42,7 +40,6 @@
   let fieldApi;
   let fieldSchema;
   let value;
-  let cellState;
 
   $: formStep = formStepContext ? $formStepContext || 1 : 1;
   $: labelPos =
@@ -67,13 +64,14 @@
   });
 
   $: value = fieldState?.value ? fieldState.value : defaultValue;
+  $: error = fieldState?.error;
+
   $: cellOptions = {
     placeholder,
     defaultValue,
-    disabled,
+    disabled: disabled || groupDisabled || fieldState?.disabled,
     template,
-    padding: "0.5rem",
-    readonly: readonly || disabled,
+    readonly: readonly || fieldState?.readonly,
     debounce: debounced ? debounceDelay : false,
     error: fieldState?.error,
     role: "formInput",
@@ -88,12 +86,8 @@
     ...$component.styles,
     normal: {
       ...$component.styles.normal,
-      "flex-direction": labelPos == "left" ? "row" : "column",
-      "align-items": "stretch",
-      gap: labelPos == "left" ? "0.5rem" : "0rem",
       "grid-column": span < 7 ? "span " + span : "span " + groupColumns * 6,
-      "--label-width":
-        labelPos == "left" ? (labelWidth ? labelWidth : "6rem") : "auto",
+      flex: span > 6 ? "auto" : "none",
     },
   };
 
@@ -112,24 +106,12 @@
 <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
 
 <div use:styleable={$component.styles}>
-  <div class="superField" class:left-label={labelPos == "left"}>
-    <SuperFieldLabel
-      {labelPos}
-      {labelWidth}
-      {label}
-      {helpText}
-      error={fieldState?.error}
+  <SuperField {labelPos} {labelWidth} {field} {label} {error} {helpText}>
+    <CellColor
+      {cellOptions}
+      {value}
+      {fieldSchema}
+      on:change={(e) => handleChange(e.detail)}
     />
-
-    <div class="inline-cells">
-      <CellColor
-        bind:cellState
-        {cellOptions}
-        {value}
-        {fieldSchema}
-        on:change={(e) => handleChange(e.detail)}
-        on:blur={cellState.lostFocus}
-      />
-    </div>
-  </div>
+  </SuperField>
 </div>

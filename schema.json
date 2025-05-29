@@ -25,12 +25,13 @@
         "type": "field/string",
         "label": "Field",
         "key": "field",
-        "required": true
+        "defaultValue": "Color Field"
       },
       {
         "type": "text",
         "label": "Label",
-        "key": "label"
+        "key": "label",
+        "placeholder": "Field Name"
       },
       {
         "type": "text",
