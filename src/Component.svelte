@@ -3,7 +3,7 @@
 
   import { SuperField, CellColor } from "@poirazis/supercomponents-shared";
 
-  const { styleable, memo } = getContext("sdk");
+  const { styleable, memo, builderStore } = getContext("sdk");
   const component = getContext("component");
 
   const formContext = getContext("form");
@@ -23,6 +23,7 @@
   export let disabled;
   export let readonly;
   export let validation;
+  export let invisible = false;
   export let labelPosition = "fieldGroup";
   export let swatch = "square";
 
@@ -86,8 +87,12 @@
     ...$component.styles,
     normal: {
       ...$component.styles.normal,
-      "grid-column": span < 7 ? "span " + span : "span " + groupColumns * 6,
-      flex: span > 6 ? "auto" : "none",
+      display:
+        invisible && !$builderStore.inBuilder
+          ? "none"
+          : $component.styles.normal.display,
+      opacity: invisible && $builderStore.inBuilder ? 0.6 : 1,
+      "grid-column": groupColumns ? `span ${span}` : "span 1",
     },
   };
 
