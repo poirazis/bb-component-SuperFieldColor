@@ -31,7 +31,8 @@
   export let debounced;
   export let debounceDelay;
 
-  export let allowCustom, customColors;
+  export let allowCustom = true,
+    customColors;
   export let themeColors, staticColors;
   export let helpText;
 
