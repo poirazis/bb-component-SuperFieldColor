@@ -45,12 +45,6 @@
         "key": "helpText"
       },
       {
-        "type": "text",
-        "label": "Input Mask",
-        "key": "mask",
-        "hidden": true
-      },
-      {
         "type": "validation/string",
         "label": "Validation",
         "key": "validation"
@@ -109,17 +103,6 @@
       {
         "tag": "style",
         "type": "select",
-        "key": "mode",
-        "label": "Mode",
-        "defaultValue": "formInput",
-        "options": [
-          { "label": "Form Input", "value": "formInput" },
-          { "label": "Inline Input", "value": "inlineInput" }
-        ]
-      },
-      {
-        "tag": "style",
-        "type": "select",
         "label": "Label Position",
         "key": "labelPosition",
         "showInBar": true,
@@ -154,6 +137,17 @@
       },
       {
         "tag": "style",
+        "type": "select",
+        "key": "mode",
+        "label": "Mode",
+        "defaultValue": "formInput",
+        "options": [
+          { "label": "Form Input", "value": "formInput" },
+          { "label": "Inline Input", "value": "inlineInput" }
+        ]
+      },
+      {
+        "tag": "style",
         "type": "number",
         "label": "Size",
         "key": "span",
@@ -182,6 +176,13 @@
             "barTitle": "Circle"
           }
         ]
+      },
+      {
+        "tag": "style",
+        "type": "boolean",
+        "key": "invisible",
+        "label": "Invisible",
+        "defaultValue": false
       }
     ]
   }
