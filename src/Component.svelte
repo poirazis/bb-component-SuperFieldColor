@@ -31,7 +31,8 @@
   export let debounced;
   export let debounceDelay;
 
-  export let allowCustom, customColors;
+  export let allowCustom = true,
+    customColors;
   export let themeColors, staticColors;
   export let helpText;
 
@@ -44,7 +45,7 @@
 
   $: formStep = formStepContext ? $formStepContext || 1 : 1;
   $: labelPos =
-    groupLabelPosition && labelPosition == "fieldGroup"
+    groupLabelPosition !== undefined && labelPosition == "fieldGroup"
       ? groupLabelPosition
       : labelPosition;
 
